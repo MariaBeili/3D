@@ -1,0 +1,406 @@
+#include "world.h"
+#include "framework/utils.h"
+#include "graphics/mesh.h"
+#include "graphics/texture.h"
+#include "graphics/fbo.h"
+#include "graphics/shader.h"
+#include "framework/input.h"
+#include "game/scene_parser.h"
+#include "framework/entities/entity_mesh.h"
+#include "game/player.h"
+#include "framework/camera.h"
+#include <iostream>
+#include "game/game.h"
+#include "framework/collision.h"
+#include "framework/entities/entity_collider.h"
+#include <string>
+
+World* World::instance = nullptr;
+
+
+World::World() {
+	camera = nullptr;
+	myscene = nullptr;
+	//skybox = nullptr;
+	player = nullptr;
+	free_camera = true; // Default to free camera until player is ready
+
+
+	/*std::cout << "World constructor started..." << std::endl;
+
+	Game* game = Game::instance;
+
+	if (!game) {
+		std::cout << "ERROR: Game instance is null!" << std::endl;
+		return;
+	}
+
+	std::cout << "Creating camera..." << std::endl;
+	// Create our camera
+	camera = new Camera();
+	camera->lookAt(Vector3(0.f, 1.0f, 1.0f), Vector3(0.f, 0.f, 0.f), Vector3(0.f, 1.f, 0.f)); //position the camera and point to 0,0,0
+	camera->setPerspective(70.f, game->window_width / game->window_height, 0.1f, 10000.f); //set the projection, we want to be perspective
+
+	//shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
+
+	std::cout << "Creating player..." << std::endl;
+	player = new Player();
+
+
+	std::cout << "Creating scene root..." << std::endl;
+	myscene = new Entity();
+	std::cout << "Parsing scene file..." << std::endl;
+	SceneParser parser;
+	if (parser.parse("data/myscene.scene", myscene))
+		std::cout << "Escena cargada correctamente." << std::endl;
+	else
+		std::cout << "Error al cargar la escena." << std::endl;
+	std::cout << "World constructor completed." << std::endl;
+	*/
+	/* //Create skybox
+	Texture* cube_texture = new Texture();
+
+
+	cube_texture->loadCubemap("landscape", { //Esto hace que se cargue el cubemap y ya, no hace flata cargarla más del disco
+
+		"data/textures/skybox/px.png",
+		"data/textures/skybox/nx.png",
+		"data/textures/skybox/ny.png",
+		"data/textures/skybox/py.png",
+		"data/textures/skybox/pz.png",
+		"data/textures/skybox/nz.png"
+		});
+	//Texture::Get("data/textures/skybox/px.png"); //Preload textures to avoid glitches llamar al cubamap en ptra zona del codigo
+
+	Material cubemap_material; //Creas material para pintar
+	cubemap_material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/cubemap.fs");
+	cubemap_material.diffuse = cube_texture; //Este caso no tiene mtl por eso necesito meter la textura
+
+	skybox = new EntityMesh(Mesh::Get("data/meshes/cubemap.ASE"), cubemap_material); //Creas entidad mesh
+	skybox->culling = false; //Desactivar culling
+
+	//Create height map
+	{
+		float size = 100.0f;
+
+		Mesh* heightmap_mesh = new Mesh();
+		heightmap_mesh->createSubdividedPlane(size);
+
+		Material heightmap_material;
+		heightmap_material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
+		heightmap_material.diffuse = Texture::Get("data/textures/heightmap.png");
+		heightmap_material.color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+	}
+
+
+
+	{
+		// Initialize random seed
+		std::srand(static_cast<unsigned int>(std::time(nullptr)));
+
+		// Load the arch blue mesh
+		Mesh* arch_mesh = Mesh::Get("data/scene/arch_blue/arch_blue.obj");
+		if (!arch_mesh) {
+			std::cout << "Error: Could not load arch mesh!" << std::endl;
+		}
+		else {
+			std::cout << "Loaded arch mesh successfully, vertices: " << arch_mesh->vertices.size() << std::endl;
+		}
+
+		Material arch_material;
+		arch_material.diffuse = Texture::Get("data/scene/arch_blue/plataformer_texture.png");
+
+		// Create the instanced entity FIRST
+		i_object = new EntityMesh(arch_mesh, arch_material, "instanced_arches");
+
+		// Create instance data
+		std::vector<Matrix44> instanceModels;
+		for (int i = 0; i < 100; i++) {
+			Matrix44 model;
+
+			// Position in a 10x10 grid
+			float x = (float)(i % 10) * 8.0f - 40.0f;
+			float z = (float)(i / 10) * 8.0f - 40.0f;
+
+			model.setTranslation(x, 0.0f, z);
+
+
+
+			instanceModels.push_back(model);
+		}
+
+		std::cout << "Created " << instanceModels.size() << " instance matrices" << std::endl;
+
+		// Set up the entity for instanced rendering
+		i_object->setAsInstance(instanceModels);
+
+		// DEBUG: Check immediately after setting
+		std::cout << "DEBUG - After setAsInstance:" << std::endl;
+		std::cout << "  Instance models count: " << i_object->instanceModels.size() << std::endl;
+		std::cout << "  Is instance: " << i_object->isInstance << std::endl;
+
+		// Add to your scene
+		myscene->addChild(i_object);
+
+		std::cout << "Finished creating instanced arches" << std::endl;
+	}
+	*/
+
+	/*
+	eye = player_position + front * 0.1f;
+	center = eye + front * 2.0f;
+	}
+	else if (camera_type == CAMERA_THIRD_PERSON)
+	{
+		float orbit_distance = 1.0f;
+		center = player_position;
+		eye = cneter - front * orbit_distance;
+
+		// Camera collision
+		sCollisionData data;
+		if (Collision::TestSceneRay(World::instance->myscene, center, -front, data, eCollisionFilter::ALL, true, orbit_distance)) {
+			eye = data.col_point;
+		}
+	}
+	else if (camera_type == CAMERA_TOP_DOWN)
+	{
+		float camera_dist = 2.0f;
+		eye = player_position + Vector(1.0f, camera_dist, 3.0f);
+		center = player_position;
+	}
+	camera->lookAt(eye, center, Vector3(0, 1, 0));
+	*/
+ }
+
+
+void World::render() {
+
+
+	// Set the camera as default
+	if (!camera) {
+
+		return;
+	}
+
+
+	camera->enable();
+
+	/// Render skybox ONLY if it exists
+
+
+	// Draw the floor grid
+
+	drawGrid();
+
+	// Render players ONLY if player exists
+	if (player) {
+		player->render(camera);
+	}
+
+
+	// Render all the scene
+	if (myscene) {
+
+		myscene->render(camera);
+	}
+
+
+
+}
+void World::update(double delta_time) {
+	if (this == nullptr) {
+
+		return;
+	}
+	// Check critical pointers first
+	if (!camera) {
+
+		return;
+	}
+
+
+	if (free_camera)
+	{
+		std::cout << "Free camera mode active" << std::endl;
+		float speed = delta_time * camera_speed;
+		std::cout << "Camera speed: " << speed << std::endl;
+
+		//Mouse input to rotate the cam
+		if (Input::isMousePressed(SDL_BUTTON_LEFT) || Game::instance->mouse_locked) {
+			std::cout << "Rotating camera with mouse input" << std::endl;
+			camera->rotate(Input::mouse_delta.x * 0.005f, Vector3(0.0f, -1.0f, 0.0f));
+			camera->rotate(Input::mouse_delta.y * 0.005f, camera->getLocalVector(Vector3(-1.0f, 0.0f, 0.0f)));
+		}
+
+		// Async input to move the camera around
+		std::cout << "Checking keyboard input for camera movement..." << std::endl;
+		if (Input::isKeyPressed(SDL_SCANCODE_W) || Input::isKeyPressed(SDL_SCANCODE_UP)) {
+			std::cout << "Moving camera forward" << std::endl;
+			camera->move(Vector3(0.0f, 0.0f, 1.0f) * speed);
+		}
+		if (Input::isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN)) {
+			std::cout << "Moving camera backward" << std::endl;
+			camera->move(Vector3(0.0f, 0.0f, -1.0f) * speed);
+		}
+		if (Input::isKeyPressed(SDL_SCANCODE_A) || Input::isKeyPressed(SDL_SCANCODE_LEFT)) {
+			std::cout << "Moving camera left" << std::endl;
+			camera->move(Vector3(1.0f, 0.0f, 0.0f) * speed);
+		}
+		if (Input::isKeyPressed(SDL_SCANCODE_D) || Input::isKeyPressed(SDL_SCANCODE_RIGHT)) {
+			std::cout << "Moving camera right" << std::endl;
+			camera->move(Vector3(-1.0f, 0.0f, 0.0f) * speed);
+		}
+	}
+	else
+	{
+		std::cout << "Player camera mode active" << std::endl;
+
+		// Check player pointer before using it
+		if (!player) {
+			std::cout << "CRITICAL ERROR: player is null in player camera mode!" << std::endl;
+			return;
+		}
+		std::cout << "Player pointer is valid" << std::endl;
+
+		{
+			std::cout << "Updating camera controller..." << std::endl;
+
+			//Update camera controller
+			camera->yaw -= Input::mouse_delta.x * delta_time * mouse_speed;
+			camera->pitch -= Input::mouse_delta.y * delta_time * mouse_speed;
+
+			std::cout << "Camera yaw: " << camera->yaw << ", pitch: " << camera->pitch << std::endl;
+
+			// Restrict pitch (Rads)
+			float limitAngle = M_PI * 0.4;
+			camera->pitch = clamp(camera->pitch, -limitAngle, limitAngle);
+			std::cout << "Clamped pitch: " << camera->pitch << std::endl;
+
+			// Create matrices individually and join them
+			Matrix44 mYaw;
+			mYaw.setRotation(camera->yaw, Vector3(0, 1, 0));
+			Matrix44 mPitch;
+			mPitch.setRotation(camera->pitch, Vector3(-1, 0, 0));
+			Matrix44 mRotation = mPitch * mYaw;
+
+			// Extract front direction vector
+			Vector3 front = mRotation.frontVector().normalize();
+			std::cout << "Front vector: " << front.x << ", " << front.y << ", " << front.z << std::endl;
+
+			// Position camera
+			Vector3 player_position = player->model.getTranslation() + Vector3(0, 1, 0);
+			std::cout << "Player position: " << player_position.x << ", " << player_position.y << ", " << player_position.z << std::endl;
+
+			Vector3 eye = player_position + front * 1.0f + Vector3(0, 1, 0);
+			Vector3 center = eye + front * 2.0f;
+
+			std::cout << "Camera eye: " << eye.x << ", " << eye.y << ", " << eye.z << std::endl;
+			std::cout << "Camera center: " << center.x << ", " << center.y << ", " << center.z << std::endl;
+
+			camera->lookAt(eye, center, Vector3(0, 1, 0));
+			std::cout << "Camera lookAt completed" << std::endl;
+		}
+
+		if (!myscene) {
+			std::cout << "ERROR: myscene is null in update!" << std::endl;
+			return;
+		}
+		std::cout << "Updating scene..." << std::endl;
+		myscene->update(delta_time);
+		std::cout << "Scene update completed" << std::endl;
+
+		if (!player) {
+			std::cout << "ERROR: Player is null before player update!" << std::endl;
+			return;
+		}
+
+		std::cout << "Updating player..." << std::endl;
+		player->update(delta_time);
+		std::cout << "Player update completed" << std::endl;
+	}
+
+	std::cout << "Processing entities to destroy..." << std::endl;
+	std::cout << "Entities to destroy count: " << entities_to_destroy.size() << std::endl;
+
+	//Quitar entities que queden porque siempre se el padre
+	for (auto e : entities_to_destroy) {
+		if (!e) {
+			std::cout << "WARNING: Null entity in entities_to_destroy" << std::endl;
+			continue;
+		}
+
+
+		if (e->parent) {
+			e->parent->removeChild(e);
+		}
+		delete e;
+
+	}
+
+	//Vacias papelera después de acabar el juego
+	entities_to_destroy.clear();
+
+}
+
+void World::addEntity(Entity* entity){
+		myscene->addChild(entity);
+}
+
+void World::destroyEntity(Entity* entity){
+		entities_to_destroy.push_back(entity);
+}
+
+void World::init() {
+
+
+	if (!Game::instance) {
+
+		return;
+	}
+
+	Game* game = Game::instance;
+
+
+	camera = new Camera();
+	camera->lookAt(Vector3(0.f, 1.0f, 1.0f), Vector3(0.f, 0.f, 0.f), Vector3(0.f, 1.f, 0.f));
+	camera->setPerspective(70.f, game->window_width / (float)game->window_height, 0.1f, 10000.f);
+
+	// Rest of your initialization code...
+	std::cout << "Creating scene root..." << std::endl;
+	myscene = new Entity();
+
+	std::cout << "Parsing scene file..." << std::endl;
+	SceneParser parser;
+	parser.parse("data/myscene.scene", myscene);
+
+
+	// Crear un nodo temporal para el personaje
+	Entity* character_scene = new Entity();
+
+	// Create player with proper mesh and material
+	Mesh* player_mesh = Mesh::Get("data/character/character.obj"); // or any character mesh
+	if (!player_mesh) {
+		std::cout << "WARNING: Could not load player mesh, creating fallback..." << std::endl;
+		player_mesh = new Mesh();
+		player_mesh->createCube();
+		player_mesh->name = "player_cube";
+	}
+
+	Material player_material;
+	player_material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
+	player_material.diffuse = Texture::Get("data/character/character.mtl");
+	player_material.color = Vector4(1.0f, 0.0f, 0.0f, 1.0f); // Red color
+
+	player = new Player(player_mesh, player_material, "Player");
+
+	// Set initial player position
+	//player->model.setTranslation(0.0f, 2.0f, 0.0f);
+	// después de crear 'player' o asignar World::instance->player:
+	player->model.setTranslation(10.0f, 2.0f, -5.0f);
+	player->previous_position = World::instance->player->model.getTranslation();
+	player->velocity = Vector3(0.0f, 0.0f, 0.0f); // opcional: reset velocidad
+
+
+
+	std::cout << "World::initialize() completed." << std::endl;
+}
