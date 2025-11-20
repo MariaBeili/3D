@@ -29,20 +29,22 @@ class World {
 	// Core scene objects
 	Camera* camera = nullptr;
 	Entity* myscene = nullptr;
-	//EntityMesh* skybox = nullptr;
+	EntityMesh* skybox = nullptr;
 	Player* player = nullptr;
 	
 
 	// runtime / debug
 	float camera_speed = 2.0f;
 	bool free_camera = true;
-	float mouse_speed = 2.0f;
+	bool free_camera_just_enabled = false;
+	float mouse_speed = 0.2f;
 
 	bool wallDetected = false;
 
-	float height = 1.0f;
-	float sphere_radius = 0.5f;
-	float spehre_ground_radius = 0.5f;
+	float height = 3.0f;
+	float sphere_radius = 0.75f;
+	float spehre_ground_radius = 0.75f;
+
 
 	void render();
 	void update(double delta_time);

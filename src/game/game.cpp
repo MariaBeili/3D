@@ -5,7 +5,7 @@
 #include "graphics/fbo.h"
 #include "graphics/shader.h"
 #include "framework/input.h"
-#include "framework/scene_parser.h"
+#include "game/scene_parser.h"
 #include "framework/entities/entity_mesh.h"
 #include <cmath>
 #include "world.h"
@@ -26,6 +26,7 @@ Shader* shader = NULL;
 //EntityMesh* skybox = nullptr;
 EntityMesh* i_object = nullptr;
 
+EntityMesh* skybox = nullptr;
 
 Game::Game(int window_width, int window_height, SDL_Window* window)
 {
@@ -105,6 +106,7 @@ void Game::onKeyDown( SDL_KeyboardEvent event )
 		case SDLK_F2: render_debug = !render_debug; break;
 		case SDLK_TAB:
 		{
+			world->free_camera_just_enabled = true;
 			world->free_camera = !world->free_camera;
 			Game::instance->setMouseLocked(world->free_camera);
 			break;

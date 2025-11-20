@@ -14,12 +14,14 @@ public:
 		Vector3 velocity = Vector3(0.0f);
 		float speed = 5.0f;
 
+		float last_camera_yaw = 0.0f;
+		float angle_y = 0.0f;
+
 		const Vector3& getMovementDirection();
 		Entity* character = nullptr;
 		static Player* instance;
 
-		Vector3 previous_position = Vector3(0.0f);
-		bool grounded = false;
+
 
 		Player() {};
 		Player(Mesh* mesh, const Material& material, const std::string& name = "");
@@ -33,6 +35,5 @@ public:
 		bool canMove(const Vector3& new_position);
 		bool isGrounded(const Vector3& new_position, float max_ray_dist, Vector3& col_point);
 		
-
 
 };

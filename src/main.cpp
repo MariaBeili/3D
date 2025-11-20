@@ -16,7 +16,7 @@
 #include "framework/input.h"
 #include "game/game.h"
 #include "framework/entities/entity.h"
-#include "framework/scene_parser.h"
+#include "game/scene_parser.h"
 
 #include <iostream> //to output
 
