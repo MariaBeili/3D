@@ -373,7 +373,7 @@ void World::init() {
 	Entity* character_scene = new Entity();
 
 	// Create player with proper mesh and material
-	Mesh* player_mesh = Mesh::Get("data/character/character.obj"); // or any character mesh
+	Mesh* player_mesh = Mesh::Get("data/fox/fox.obj"); // or any character mesh
 	if (!player_mesh) {
 		std::cout << "WARNING: Could not load player mesh, creating fallback..." << std::endl;
 		player_mesh = new Mesh();
@@ -382,8 +382,8 @@ void World::init() {
 	}
 
 	Material player_material;
-	player_material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/character.fs");
-	//player_material.diffuse = Texture::Get("data/character/character.mtl");
+	player_material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
+	player_material.diffuse = Texture::Get("data/fox/Diffuse.png");
 	//player_material.color = Vector4(1.0f, 0.0f, 0.0f, 1.0f); // Red color
 
 	//player_material.shader->setUniform("u_maps", Vector2(0.0f, 1.0f));
