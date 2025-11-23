@@ -11,6 +11,11 @@
 #include "framework/entities/entity.h"
 #include "framework/stage.h"
 
+
+class World;
+class Camera;
+
+
 class Game
 {
 public:
@@ -55,6 +60,10 @@ public:
 
 
 	Stage* current_stage = nullptr;
-	std::map<eStage, Stage*> stages;
-	void setStage(eStage stage_id);
+	eStage current_stage_id = MENUSTAGE;
+
+	// global camera for 3D world rendering
+	Camera world_camera;
+	void setStage(eStage new_stage);
+	Stage* stages[4] = { nullptr };
 };

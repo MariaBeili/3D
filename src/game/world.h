@@ -1,6 +1,9 @@
 #pragma once
 
 #include "framework/utils.h"
+#include "game/object_spawner.h"
+#include <unordered_set>
+
 
 class Camera;
 class Player;
@@ -31,6 +34,7 @@ class World {
 	Entity* myscene = nullptr;
 	EntityMesh* skybox = nullptr;
 	Player* player = nullptr;
+	ObjectSpawner* spawner = nullptr;
 	
 
 	// runtime / debug
@@ -56,5 +60,5 @@ class World {
 
 	// deferred destroy queue
 	std::vector<Entity*> entities_to_destroy;
-	
+	std::unordered_set<Entity*> entities_to_destroy_set;
 };

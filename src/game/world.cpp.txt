@@ -61,7 +61,7 @@ World::World() {
 	Texture* cube_texture = new Texture();
 
 
-	cube_texture->loadCubemap("landscape", { //Esto hace que se cargue el cubemap y ya, no hace flata cargarla más del disco
+	cube_texture->loadCubemap("landscape", { //Esto hace que se cargue el cubemap y ya, no hace flata cargarla m s del disco
 
 		"data/textures/skybox/px.png",
 		"data/textures/skybox/nx.png",
@@ -347,7 +347,7 @@ void World::update(double delta_time) {
 
 	}
 
-	//Vacias papelera después de acabar el juego
+	//Vacias papelera despu s de acabar el juego
 	entities_to_destroy.clear();
 
 }
@@ -406,7 +406,7 @@ void World::init() {
 
 	// Set initial player position
 	//player->model.setTranslation(0.0f, 2.0f, 0.0f);
-	// después de crear 'player' o asignar World::instance->player:
+	// despu s de crear 'player' o asignar World::instance->player:
 	player->model.setTranslation(10.0f, 2.0f, -5.0f);
 	//player->previous_position = World::instance->player->model.getTranslation();
 	player->velocity = Vector3(0.0f, 0.0f, 0.0f); // opcional: reset velocidad
@@ -432,3 +432,149 @@ void World::init() {
 
 	//std::cout << "World::initialize() completed." << std::endl;
 }
+
+--------------------------
+/*std::cout << "World constructor started..." << std::endl;
+
+Game* game = Game::instance;
+
+if (!game) {
+	std::cout << "ERROR: Game instance is null!" << std::endl;
+	return;
+}
+
+std::cout << "Creating camera..." << std::endl;
+// Create our camera
+camera = new Camera();
+camera->lookAt(Vector3(0.f, 1.0f, 1.0f), Vector3(0.f, 0.f, 0.f), Vector3(0.f, 1.f, 0.f)); //position the camera and point to 0,0,0
+camera->setPerspective(70.f, game->window_width / game->window_height, 0.1f, 10000.f); //set the projection, we want to be perspective
+
+//shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
+
+std::cout << "Creating player..." << std::endl;
+player = new Player();
+
+
+std::cout << "Creating scene root..." << std::endl;
+myscene = new Entity();
+std::cout << "Parsing scene file..." << std::endl;
+SceneParser parser;
+if (parser.parse("data/myscene.scene", myscene))
+	std::cout << "Escena cargada correctamente." << std::endl;
+else
+	std::cout << "Error al cargar la escena." << std::endl;
+std::cout << "World constructor completed." << std::endl;
+*/
+/* //Create skybox
+Texture* cube_texture = new Texture();
+
+
+cube_texture->loadCubemap("landscape", { //Esto hace que se cargue el cubemap y ya, no hace flata cargarla mÃ¡s del disco
+
+	"data/textures/skybox/px.png",
+	"data/textures/skybox/nx.png",
+	"data/textures/skybox/ny.png",
+	"data/textures/skybox/py.png",
+	"data/textures/skybox/pz.png",
+	"data/textures/skybox/nz.png"
+	});
+//Texture::Get("data/textures/skybox/px.png"); //Preload textures to avoid glitches llamar al cubamap en ptra zona del codigo
+
+Material cubemap_material; //Creas material para pintar
+cubemap_material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/cubemap.fs");
+cubemap_material.diffuse = cube_texture; //Este caso no tiene mtl por eso necesito meter la textura
+
+skybox = new EntityMesh(Mesh::Get("data/meshes/cubemap.ASE"), cubemap_material); //Creas entidad mesh
+skybox->culling = false; //Desactivar culling
+
+//Create height map
+{
+	float size = 100.0f;
+
+	Mesh* heightmap_mesh = new Mesh();
+	heightmap_mesh->createSubdividedPlane(size);
+
+	Material heightmap_material;
+	heightmap_material.shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
+	heightmap_material.diffuse = Texture::Get("data/textures/heightmap.png");
+	heightmap_material.color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+}
+
+
+
+{
+	// Initialize random seed
+	std::srand(static_cast<unsigned int>(std::time(nullptr)));
+
+	// Load the arch blue mesh
+	Mesh* arch_mesh = Mesh::Get("data/scene/arch_blue/arch_blue.obj");
+	if (!arch_mesh) {
+		std::cout << "Error: Could not load arch mesh!" << std::endl;
+	}
+	else {
+		std::cout << "Loaded arch mesh successfully, vertices: " << arch_mesh->vertices.size() << std::endl;
+	}
+
+	Material arch_material;
+	arch_material.diffuse = Texture::Get("data/scene/arch_blue/plataformer_texture.png");
+
+	// Create the instanced entity FIRST
+	i_object = new EntityMesh(arch_mesh, arch_material, "instanced_arches");
+
+	// Create instance data
+	std::vector<Matrix44> instanceModels;
+	for (int i = 0; i < 100; i++) {
+		Matrix44 model;
+
+		// Position in a 10x10 grid
+		float x = (float)(i % 10) * 8.0f - 40.0f;
+		float z = (float)(i / 10) * 8.0f - 40.0f;
+
+		model.setTranslation(x, 0.0f, z);
+
+
+
+		instanceModels.push_back(model);
+	}
+
+	std::cout << "Created " << instanceModels.size() << " instance matrices" << std::endl;
+
+	// Set up the entity for instanced rendering
+	i_object->setAsInstance(instanceModels);
+
+	// DEBUG: Check immediately after setting
+	std::cout << "DEBUG - After setAsInstance:" << std::endl;
+	std::cout << "  Instance models count: " << i_object->instanceModels.size() << std::endl;
+	std::cout << "  Is instance: " << i_object->isInstance << std::endl;
+
+	// Add to your scene
+	myscene->addChild(i_object);
+
+	std::cout << "Finished creating instanced arches" << std::endl;
+}
+*/
+
+/*
+eye = player_position + front * 0.1f;
+center = eye + front * 2.0f;
+}
+else if (camera_type == CAMERA_THIRD_PERSON)
+{
+	float orbit_distance = 1.0f;
+	center = player_position;
+	eye = cneter - front * orbit_distance;
+
+	// Camera collision
+	sCollisionData data;
+	if (Collision::TestSceneRay(World::instance->myscene, center, -front, data, eCollisionFilter::ALL, true, orbit_distance)) {
+		eye = data.col_point;
+	}
+}
+else if (camera_type == CAMERA_TOP_DOWN)
+{
+	float camera_dist = 2.0f;
+	eye = player_position + Vector(1.0f, camera_dist, 3.0f);
+	center = player_position;
+}
+camera->lookAt(eye, center, Vector3(0, 1, 0));
+*/

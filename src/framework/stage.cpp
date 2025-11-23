@@ -1,120 +1,106 @@
 #include "stage.h"
 #include "game/game.h"
-#include "framework/input.h"
+#include <GL/glew.h>
 #include "game/world.h"
 
+// ---------------------------------------------------------
+// MENU STAGE IMPLEMENTATION
+// ---------------------------------------------------------
 
-
-// ---------------------------------------------------------------------
-// MENU STAGE
-// ---------------------------------------------------------------------
 MenuStage::MenuStage() {
+    Material mat;
+    //mat.diffuse = Texture::Get("data/textures/button.png");
+    mat.diffuse = Texture::Get("data/textures/skybox/px.png");
 
+    ui_elements.push_back(
+        new EntityUI({ 400,300 }, { 300,100 }, mat, UI_BUTTON_PLAY, "play_btn")
+    );
 }
 
-void MenuStage::render() {
-	World::instance->render();
-
-	if (shader_cube)
-	{
-		// Enable shader
-		shader_cube->enable();
-
-		// Upload uniforms
-		shader_cube->setUniform("u_color", Vector4(1, 1, 1, 1));
-		shader_cube->setUniform("u_viewprojection", World::instance->camera->viewprojection_matrix);
-		shader_cube->setUniform("u_texture", texture_cube, 0);
-		shader_cube->setUniform("u_model", m_cube);
-		shader_cube->setUniform("u_time", time);
-
-
-		// Do the draw call
-		mesh_cube->render(GL_TRIANGLES);
-
-		// Disable shader
-		shader_cube->disable();
-	}
-
-
+void MenuStage::onEnter() {
+    init2DCamera(Game::instance->window_width, Game::instance->window_height);
 }
 
-void MenuStage::update(double seconds_elapsed) {
-
-	World::instance->update(seconds_elapsed);
+void MenuStage::update(double dt) {
+    for (auto ui : ui_elements)
+        ui->update((float)dt);
 }
 
-void MenuStage::onEnter()
-{
-    std::cout << "Entering MenuStage\n";
-    texture_cube = Texture::Get("data/textures/StandardCubeMap.tga");
+void MenuStage::render(Camera* world_camera) {
+    glDisable(GL_DEPTH_TEST);
 
-    mesh_cube = Mesh::Get("data/meshes/cubemap.obj");
+    for (auto ui : ui_elements)
+        ui->render(&camera2D);
 
-    shader_cube = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
-
+    glEnable(GL_DEPTH_TEST);
 }
 
-void MenuStage::onExit() 
-{
-    std::cout << "Exiting MenuStage\n";
-}
+// ---------------------------------------------------------
+// PLAY STAGE IMPLEMENTATION
+// ---------------------------------------------------------
 
-// -------------------------------------------------------------------------
-// PLAY STAGE
-// -------------------------------------------------------------------------
 PlayStage::PlayStage() {
+    Material mat;
+    //mat.diffuse = Texture::Get("data/textures/healthbar.png");
+    mat.diffuse = Texture::Get("data/textures/skybox/px.png");
 
-
+    hud_elements.push_back(
+        new EntityUI({ 100,50 }, { 200,40 }, mat, UI_BUTTON_UNDEFINED, "healthbar")
+    );
 }
 
 void PlayStage::onEnter() {
-    std::cout << "Entering PlayStage\n";
-
+    init2DCamera(Game::instance->window_width, Game::instance->window_height);
 }
 
-void PlayStage::onExit() {
-    std::cout << "Leaving PlayStage\n";
+void PlayStage::update(double dt) {
+    if (world)
+        world->update(dt);
 
-
+    for (auto ui : hud_elements)
+        ui->update((float)dt);
 }
-
-void PlayStage::update(double seconds_elapsed) {
-
-
-}
-
 
 void PlayStage::render(Camera* camera) {
+    if (world)
+        world->render();
 
-
+    // HUD on top
+    glDisable(GL_DEPTH_TEST);
+    for (auto ui : hud_elements)
+        ui->render(&camera2D);
+    glEnable(GL_DEPTH_TEST);
 }
 
+// ---------------------------------------------------------
+// END STAGE IMPLEMENTATION
+// ---------------------------------------------------------
 
-// ----------------------------------------------------------------------
-// END STAGE
-// ----------------------------------------------------------------------
-/*EndStage::EndStage() {
+EndStage::EndStage(bool win_screen) {
+    this->win_screen = win_screen;
+
+    Material mat;
+    mat.diffuse = Texture::Get(win_screen ?
+        //"data/textures/you_win.png" :
+        //"data/textures/you_lose.png");
+        "data/textures/skybox/px.png" :
+        "data/textures/skybox/px.png");
 
 
-}*/
+    result_panel = new EntityUI({ 400,300 }, { 600,200 }, mat,
+        UI_BUTTON_UNDEFINED, "end_panel");
+}
+
+void EndStage::onEnter() {
+    init2DCamera(Game::instance->window_width, Game::instance->window_height);
+}
+
+void EndStage::update(double dt) {
+    // no logic needed
+}
 
 void EndStage::render(Camera* camera) {
-
-
-}
-
-void EndStage::update(double seconds_elapsed) {
-
-
-}
-
-void EndStage::onEnter()
-{
-    std::cout << "Entering EndStage\n";
-
-}
-
-void EndStage::onExit()
-{
-    std::cout << "Leaving EndStage\n";
+    glDisable(GL_DEPTH_TEST);
+    result_panel->render(&camera2D);
+    glEnable(GL_DEPTH_TEST);
 }

@@ -281,7 +281,7 @@ bool Player::canMove(const Vector3& new_position)
 
 
 
-    for (auto e : world->myscene->children)
+    for (Entity* e : world->myscene->children)
     {
         if (!e) {
             std::cout << "WARNING: Null entity in scene children" << std::endl;

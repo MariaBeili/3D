@@ -11,7 +11,7 @@
 #include "world.h"
 
 World* world = World::getInstance();
-Game* Game::instance = NULL;
+Game* Game::instance = nullptr;
 //some globals
 Mesh* mesh = NULL;
 Texture* texture = NULL;
@@ -65,7 +65,17 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
 	SDL_ShowCursor(!mouse_locked); //hide or show the mouse
 
 
+	// -------- CREATE STAGES --------
+	stages[MENUSTAGE] = new MenuStage();
+	stages[PLAYSTAGE] = new PlayStage();
+	stages[WINSTAGE] = new EndStage(true);
+	stages[LOSESTAGE] = new EndStage(false);
 
+	// assign world to play stage
+	stages[PLAYSTAGE]->world = new World();
+
+	// -------- START AT MENU --------
+	setStage(MENUSTAGE);
 
 }
 
@@ -78,8 +88,8 @@ void Game::render(void)
 	// Clear the window and the depth buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	world->render();
-	//World::getInstance()->addEntity(world->myscene->children);
+	if (current_stage)
+		current_stage->render(world->camera);
 
 	// Render the FPS, Draw Calls, etc
 	drawText(2, 2, getGPUStats(), Vector3(1, 1, 1), 2);
@@ -92,7 +102,9 @@ void Game::render(void)
 
 void Game::update(double seconds_elapsed)
 {
-	world->update(seconds_elapsed);
+
+	if (current_stage)
+		current_stage->update(seconds_elapsed);
 
 }
 
@@ -168,20 +180,11 @@ void Game::setMouseLocked(bool must_lock)
 }
 
 
-void Game::setStage(eStage stage_id)
+void Game::setStage(eStage new_stage)
 {
-	Stage* next_stage = stages[stage_id];
-	if (!next_stage)
-	{
-		return;
-	}
-	//Leave the current stage
-	if (current_stage)
-	{
-		current_stage->onExit();
-	}
-	//Enter the new one
-	next_stage->onEnter(); //current_stage
-	//Update current stage
-	current_stage = next_stage;
+	current_stage_id = new_stage;
+	current_stage = stages[new_stage];
+
+	current_stage->onEnter();
+
 }
