@@ -16,7 +16,7 @@ EntityCollider::EntityCollider(Mesh* mesh, const Material& material, const std::
 	this->mesh = mesh;
 	this->material = material;
 	this->name = name;
-	this->layer = eCollisionFilter::SCENARIO; // Default layer
+	this->layer = eCollisionFilter::SCENARIO;
 	this->is_dynamic = false;
 }
 
@@ -42,11 +42,10 @@ void EntityCollider::update(float delta_time)
 	if (!is_dynamic) return;
 
 	Vector3 position = model.getTranslation();
-	Vector3 velocity = Vector3(0, -9.8f * delta_time, 0); // simple gravity
+	Vector3 velocity = Vector3(0, -3.8f * delta_time, 0);
 
 	Vector3 new_position = position + velocity * delta_time;
 
-	// Ground collision
 	std::vector<sCollisionData> collisions;
 	std::vector<sCollisionData> ground_collisions;
 
@@ -54,7 +53,6 @@ void EntityCollider::update(float delta_time)
 
 	if (!ground_collisions.empty())
 	{
-		// push up to ground
 		position.y = ground_collisions[0].col_point.y;
 		velocity.y = 0;
 	}
@@ -73,7 +71,6 @@ void EntityCollider::getCollisionWithModel(const Matrix44& m, const Vector3& tar
 	float sphere_ground_radius = World::instance->spehre_ground_radius;
 	float player_height = World::instance->height;
 
-	//floor collisions 
 	Vector3 floor_sphere_center = center + Vector3(0.0f, sphere_ground_radius, 0.0f);
 
 	if (mesh->testSphereCollision(m, floor_sphere_center, sphere_radius, collision_point, collision_normal)) {

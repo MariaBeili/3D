@@ -5,16 +5,17 @@
 #pragma once
 
 #include "framework/includes.h"
+#include "framework/stage.h"
+
 #include "framework/camera.h"
 #include "framework/utils.h"
 #include "framework/framework.h"
 #include "framework/entities/entity.h"
-#include "framework/stage.h"
 
 
+// FORWARD DECLARATIONS
 class World;
 class Camera;
-
 
 class Game
 {
@@ -48,6 +49,8 @@ public:
 
 	void setMouseLocked(bool must_lock);
 
+	
+
 	//events
 	void onKeyDown( SDL_KeyboardEvent event );
 	void onKeyUp(SDL_KeyboardEvent event);
@@ -58,12 +61,13 @@ public:
 	void onGamepadButtonUp(SDL_JoyButtonEvent event);
 	void onResize(int width, int height);
 
-
+	void setStage(eStage new_stage);
+	// ---- new stage system ----
+	Stage* stages[4] = { nullptr };
 	Stage* current_stage = nullptr;
 	eStage current_stage_id = MENUSTAGE;
 
 	// global camera for 3D world rendering
 	Camera world_camera;
-	void setStage(eStage new_stage);
-	Stage* stages[4] = { nullptr };
+
 };

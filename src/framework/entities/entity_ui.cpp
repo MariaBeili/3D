@@ -14,7 +14,7 @@ EntityUI::EntityUI(Vector2 new_size, const Material& material) {
 	this->material = material;
 
 	if (!this->material.shader) {
-		this->material.shader = Shader::Get("data/shader/basic.vs", material.diffuse ? "data/shader/texture.fs": "data/shader/caiguda.fs");
+		this->material.shader = Shader::Get("data/shaders/basic.vs", material.diffuse ? "data/shaders/texture.fs": "data/shaders/caiguda.fs");
 	}
 
 
@@ -33,7 +33,7 @@ EntityUI::EntityUI(Vector2 new_pos, Vector2 new_size, const Material& material, 
 
 	this->material = material;
 	if (!this->material.shader) {
-		this->material.shader = Shader::Get("data/shader/basic.vs", material.diffuse ? "data/shader/texture.fs" : "data/shader/caiguda.fs");
+		this->material.shader = Shader::Get("data/shaders/basic.vs", material.diffuse ? "data/shaders/texture.fs" : "data/shaders/caiguda.fs");
 	}
 
 
@@ -80,37 +80,34 @@ void EntityUI::update(float delta_time) {
 
 	Vector2 mouse_pos = Input::mouse_position;
 
-	if (button_id != UI_BUTTON_UNDEFINED &&
-		mouse_pos.x > (position.x - size.x * 0.5f) &&
-		mouse_pos.x < (position.x + size.x * 0.5f) &&
-		mouse_pos.y >(position.y - size.y * 0.5f) &&
-		mouse_pos.y < (position.y + size.y * 0.5f)) {
+	bool is_hovered =
+		(mouse_pos.x > (position.x - size.x * 0.5f)) &&
+		(mouse_pos.x < (position.x + size.x * 0.5f)) &&
+		(mouse_pos.y > (position.y - size.y * 0.5f)) &&
+		(mouse_pos.y < (position.y + size.y * 0.5f));
 
-		// The mouse is over the button
-		material.color = Vector4(1.5f); // Change color to indicate hover
+	if (button_id != UI_BUTTON_UNDEFINED && is_hovered) {
 
+		// Canvi de color si el ratolí està sobre
+		material.color = Vector4(1.2f, 1.2f, 1.2f, 1.0f);
+
+		// Només canvia d’estatge si realment cliques el botó esquerre
 		if (Input::wasMouseReleased(SDL_BUTTON_LEFT)) {
-			// Button clicked
-			switch (button_id) {
-			case UI_BUTTON_PLAY:
+			std::cout << "[UI] Button clicked: " << name << std::endl;
+			if (button_id == UI_BUTTON_PLAY) {
 				Game::instance->setStage(PLAYSTAGE);
-				break;
-			case UI_BUTTON_EXIT:
-				break;
-			default:
-				break;
 			}
-
 		}
 		else if (Input::isMousePressed(SDL_BUTTON_LEFT)) {
-			// Button is being pressed
-			material.color = Vector4(0.9f, 0.9f, 0.9f, 1.0f ); // Change color to indicate press
+			material.color = Vector4(0.8f, 0.8f, 0.8f, 1.0f);
 		}
 	}
 	else {
-		material.color = Vector4::WHITE; // Default color
-		Entity::update(delta_time);
+		// Color per defecte
+		material.color = Vector4::WHITE;
 	}
+
+	Entity::update(delta_time);
 }
 
 

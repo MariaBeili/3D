@@ -4,6 +4,7 @@
 #include "graphics/material.h"
 #include "graphics/mesh.h"
 #include "framework/camera.h"
+#include "framework/animation.h"
 
 class Camera;
 class Mesh;
@@ -16,10 +17,11 @@ class EntityMesh : public Entity {
 		Material material;
 
 		// Constructores
+		virtual ~EntityMesh() {} // required for dynamic_cast
 		EntityMesh() {}
 		EntityMesh(Mesh* m, const Material& mat, const std::string& name = "");
 
-		bool culling = true;
+		bool culling = false;
 
 		std::vector<Matrix44> models; 
 
@@ -33,4 +35,7 @@ class EntityMesh : public Entity {
 
 		void render(Camera* camera) override;
 		void update(float delta_time) override;
+
+		Animator animator;
+		bool isAnimated = false;
 };

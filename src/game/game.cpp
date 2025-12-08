@@ -65,17 +65,22 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
 	SDL_ShowCursor(!mouse_locked); //hide or show the mouse
 
 
+	// INIT WORLD CAMERA
+	world_camera.lookAt(Vector3(0, 5, 10), Vector3(0, 0, 0), Vector3(0, 1, 0));
+	world_camera.setPerspective(60, window_width / float(window_height), 0.1f, 10000.f);
+
 	// -------- CREATE STAGES --------
 	stages[MENUSTAGE] = new MenuStage();
 	stages[PLAYSTAGE] = new PlayStage();
-	stages[WINSTAGE] = new EndStage(true);
-	stages[LOSESTAGE] = new EndStage(false);
+	stages[WINSTAGE] = new WinStage(true);
+	stages[LOSESTAGE] = new LoseStage(false);
 
 	// assign world to play stage
 	stages[PLAYSTAGE]->world = new World();
 
 	// -------- START AT MENU --------
 	setStage(MENUSTAGE);
+
 
 }
 
@@ -91,6 +96,7 @@ void Game::render(void)
 	if (current_stage)
 		current_stage->render(world->camera);
 
+
 	// Render the FPS, Draw Calls, etc
 	drawText(2, 2, getGPUStats(), Vector3(1, 1, 1), 2);
 
@@ -102,11 +108,10 @@ void Game::render(void)
 
 void Game::update(double seconds_elapsed)
 {
-
 	if (current_stage)
 		current_stage->update(seconds_elapsed);
-
 }
+
 
 //Keyboard event handler (sync input)
 void Game::onKeyDown( SDL_KeyboardEvent event )
@@ -180,11 +185,11 @@ void Game::setMouseLocked(bool must_lock)
 }
 
 
-void Game::setStage(eStage new_stage)
-{
-	current_stage_id = new_stage;
+void Game::setStage(eStage new_stage) {
+	if (current_stage)
+		current_stage->onExit();
+
 	current_stage = stages[new_stage];
-
-	current_stage->onEnter();
-
+	if (current_stage)
+		current_stage->onEnter();
 }

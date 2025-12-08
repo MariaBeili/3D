@@ -2,16 +2,15 @@
 
 #include <vector>
 
-
 #include "graphics/texture.h"
 #include "graphics/shader.h"
 #include "graphics/mesh.h"
 //#include "game/game.h"
 #include "framework/camera.h"
-
 #include "framework/entities/entity_ui.h"
+#include "framework/utils.h"
 
-// FORWARD DECLARE
+//FORWARD DECLARE
 class World;
 class Game;
 
@@ -36,6 +35,7 @@ public:
     World* world = nullptr;
     Camera camera2D;
 
+
     virtual ~Stage() {}
 
     virtual void onEnter() {}
@@ -57,6 +57,8 @@ public:
 class MenuStage : public Stage {
 public:
     std::vector<EntityUI*> ui_elements;
+    EntityUI* background = nullptr;
+    EntityUI* play_button = nullptr;
 
     MenuStage();
 
@@ -73,6 +75,11 @@ public:
 class PlayStage : public Stage {
 public:
     std::vector<EntityUI*> hud_elements;
+    EntityUI* play_button2 = nullptr;
+    EntityMesh* landing_platform = nullptr;
+
+    Timer animation_timer = 10.0f;
+    bool animation_changed = false;
 
     PlayStage();
 
@@ -82,19 +89,29 @@ public:
     void render(Camera* camera) override;
 };
 
-// ---------------------------------------------------------
-// END STAGE (WIN / LOSE)
-// ---------------------------------------------------------
 
-class EndStage : public Stage {
+// ---------------------------------------------------------
+// WIN STAGE
+// ---------------------------------------------------------
+class WinStage : public Stage {
 public:
     EntityUI* result_panel = nullptr;
     bool win_screen = false;
+    WinStage(bool win_screen = false) {}
+    void onEnter() override; // Para imprimir mensaje consola
+    void update(double dt) override;
+    void render(Camera* camera) override;
+};
 
-    EndStage(bool win_screen = false);
-
+// ---------------------------------------------------------
+// LOSE STAGE
+// ---------------------------------------------------------
+class LoseStage : public Stage {
+public:
+    EntityUI* result_panel = nullptr;
+    bool win_screen = false;
+    LoseStage(bool win_screen = false) {}
     void onEnter() override;
-    void onExit() override {}
     void update(double dt) override;
     void render(Camera* camera) override;
 };

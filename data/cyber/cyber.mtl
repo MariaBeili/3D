@@ -1,0 +1,16 @@
+# Blender MTL File: 'Armored_man_main_project.blend'
+# Material Count: 1
+
+newmtl TT_checker_512x512_UV_GRID.001
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.581818 0.581818 0.581818
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Bump Normal.png
+map_Kd BaseColor.png
+map_Ns Roughness.png
+refl Metallic.png

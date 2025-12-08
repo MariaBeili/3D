@@ -68,44 +68,50 @@ void EntityMesh::render(Camera* camera)
         mesh->renderInstanced(GL_TRIANGLES, instanceModels.data(), instanceModels.size());
     }
     else {
-        /*
-        //ESTA OPTIMIZACIÓN NO SIRVE SI HACEMOS INSTANCING, con instanci hay que hacerlo con cada mdel 
-        float distance = 10.0f;
-        const Matrix44& globalMatrix = getGlobalMatrix();
-        BoundingBox box = transformBoundingBox(
-            globalMatrix, //con model lo puedep usar porquè no tengo padre
-            mesh->box
-        );
+        if (culling == true) {
+            //ESTA OPTIMIZACIÓN NO SIRVE SI HACEMOS INSTANCING, con instanci hay que hacerlo con cada mdel 
+            float distance = 50.0f;
+            const Matrix44& globalMatrix = getGlobalMatrix();
+            BoundingBox box = transformBoundingBox(
+                globalMatrix, //con model lo puedep usar porquè no tengo padre
+                mesh->box
+            );
 
-        Vector3 center = box.center;
+            Vector3 center = box.center;
 
-        // Discard objects far away from the camera
-        if (camera->eye.distance(center) > distance)
-            if (culling == true)
-                return;
+            // Discard objects far away from the camera
+            if (camera->eye.distance(center) > distance)
+                if (culling == true)
+                    return;
 
-        //FRUSTUM
+            //FRUSTUM
 
-        // Testing sphere: using halfsize length as  
-        // radius
-        float sphere_radius = box.halfsize.length();
+            // Testing sphere: using halfsize length as  
+            // radius
+            float sphere_radius = box.halfsize.length();
 
-        // Discard objects whose bounding sphere 
-        // is not inside the camera frustum
-        if (camera->testSphereInFrustum(center,
-            sphere_radius) != CLIP_INSIDE)
-            if (culling == true)
-                return;
+            // Discard objects whose bounding sphere 
+            // is not inside the camera frustum
+            if (camera->testSphereInFrustum(center,
+                sphere_radius) != CLIP_INSIDE)
+                if (culling == true)
+                    return;
 
-        shader->setUniform("u_model", model);
+            shader->setUniform("u_model", model);
 
-        mesh->render(GL_TRIANGLES);
-        */
-
+            mesh->render(GL_TRIANGLES);
+        }
     }
     shader->setUniform("u_model", model);
 
-    mesh->render(GL_TRIANGLES);
+    if (isAnimated) {
+        mesh->renderAnimated(GL_TRIANGLES, &animator.getCurrentSkeleton());
+    }
+    else {
+        mesh->render(GL_TRIANGLES);
+    }
+
+    
 
 
     // Disable shader after finishing rendering

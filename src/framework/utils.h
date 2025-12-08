@@ -49,9 +49,11 @@ char* fetchBufferVec4(char* data, std::vector<Vector4>& vector);
 class Timer {
 
 	float init_time = 0.0f;
-	float time_left = 0.0f;
+	
 
 public:
+	float time_left = 0.0f;
+
 	Timer() {};
 
 	Timer(const float duration)

@@ -38,16 +38,14 @@ void Entity::addChild(Entity* child)
 void Entity::removeChild(Entity* child)
 {
 	// Checks if it's a child
-	if (!child) return;
-	// find the child in the vector
 	auto it = std::find(children.begin(), children.end(), child);
 	if (it == children.end()) {
-		// already removed / not a child -> nothing to do
+		std::cerr << "Entity is not a child!!" << std::endl;
 		return;
 	}
-	// detach safely
-	child->parent = nullptr;
+
 	children.erase(it);
+	child->parent = nullptr;
 }
 
 Matrix44 Entity::getGlobalMatrix()

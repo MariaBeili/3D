@@ -4,14 +4,20 @@
 #include "framework/collision.h"
 
 
-
+enum ObjectType {
+	OBJ_BOX,
+	OBJ_COIN,
+	OBJ_JETPACK,
+	OBJ_OTHER
+};
 
 class EntityCollider : public EntityMesh
 {
 	bool is_dynamic = false;
 public:
-
-
+	bool picked = false;
+	float destroy_timer = -1.0f;
+	ObjectType type = OBJ_OTHER;
 
 	int layer = eCollisionFilter::SCENARIO;
 	bool isInstanced = false;

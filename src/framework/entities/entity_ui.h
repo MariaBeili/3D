@@ -1,9 +1,6 @@
 #pragma once
 
 #include "entity_mesh.h"
-#include "framework/includes.h"
-#include "framework/framework.h"
-#include "framework/camera.h"
 
 enum eUIButtonID {
 	UI_BUTTON_UNDEFINED,

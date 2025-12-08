@@ -2,7 +2,7 @@
 
 #include "framework/utils.h"
 #include "game/object_spawner.h"
-#include <unordered_set>
+#include "framework/entities/entity_collider.h"
 
 
 class Camera;
@@ -22,7 +22,6 @@ class World {
 				return instance;
 
 			instance = new World();
-			//instance->init();  // ? THIS IS THE PROBLEM!
 			return instance;
 		}
 
@@ -58,7 +57,13 @@ class World {
 	void addEntity(Entity* entity);
 	void destroyEntity(Entity* entity);
 
-	// deferred destroy queue
 	std::vector<Entity*> entities_to_destroy;
-	std::unordered_set<Entity*> entities_to_destroy_set;
+
+	int hearts = 3;
+	int coins = 0;
+	
+	std::vector<EntityCollider*> dynamic_objects;
+	//void handleDynamicCollision(EntityCollider * obj);
+	Entity* last_collision_entity = nullptr;
+
 };
